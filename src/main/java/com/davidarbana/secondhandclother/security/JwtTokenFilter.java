@@ -1,7 +1,6 @@
 package com.davidarbana.secondhandclother.security;
 
 import com.davidarbana.secondhandclother.model.User;
-import com.davidarbana.secondhandclother.repository.UserRepository;
 import com.davidarbana.secondhandclother.token.TokenRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -15,13 +14,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +28,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     private final TokenRepository tokenRepository;
-    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(
@@ -45,14 +41,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        jwtToken = header.replace("Bearer" , "");
+        jwtToken = header.replace("Bearer " , "");
 
             String username = jwtService.getUsername(jwtToken);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Optional<User> user = userRepository.findByUsername(username);
-            if (user.isEmpty()) {
-                throw new UsernameNotFoundException("User not found");
-            }
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             var isTokenValid = tokenRepository.findByToken(jwtToken)
                     .map(t -> !t.isExpired() && !t.isRevoked())
