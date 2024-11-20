@@ -70,7 +70,7 @@ public class GarmentService {
             if (!existingGarment.get().getUser().getId().equals(principalId)) {
                 throw new IllegalArgumentException("The garment does not belong to this user.");
             }
-            Garment updatedGarment  = Garment.builder()
+            Garment updatedGarment = Garment.builder()
                     .id(existingGarment.get().getId())
                     .user(existingGarment.get().getUser())
                     .price(garmentRequest.price())
@@ -85,12 +85,14 @@ public class GarmentService {
     }
 
     // Delete a garment
-    public boolean deleteGarment(Long id, String userId) {
-/*        Optional<Garment> existingGarment = garmentRepository.findById(id);
-        if (existingGarment.isPresent() && existingGarment.get().getPublisherId().equals(userId)) {
+    public boolean deleteGarment(Long id, Principal principal) {
+        Optional<Garment> existingGarment = garmentRepository.findById(id);
+        Long principalId = ((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
+        if (existingGarment.isPresent() && existingGarment.get().getUser().getId().equals(principalId)) {
             garmentRepository.deleteById(id);
             return true;
-        }*/
+        }
         return false;
     }
+
 }

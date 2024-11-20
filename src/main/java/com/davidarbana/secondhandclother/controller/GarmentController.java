@@ -79,8 +79,7 @@ public class GarmentController {
     public Garment getGarment(
             @Parameter(description = "ID of the garment to retrieve", required = true)
             @PathVariable Long id) {
-        return garmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Garment not found"));
+        return garmentService.getGarmentById(id);
     }
 
     @PostMapping
@@ -92,4 +91,10 @@ public class GarmentController {
     public void patchGarment(@PathVariable("id") Long id, @RequestBody GarmentRequest garmentRequest, Principal principal){
         garmentService.updateGarment(id, garmentRequest, principal);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteGarment(@PathVariable("id") Long id, Principal principal){
+        garmentService.deleteGarment(id, principal);
+    }
+
 }

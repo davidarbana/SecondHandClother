@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/clothes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/clothes").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/clothes/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/clothes").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/clothes/{id}").authenticated()
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
