@@ -1,6 +1,7 @@
 package com.davidarbana.secondhandclother.controller;
 
 import com.davidarbana.secondhandclother.model.Garment;
+import com.davidarbana.secondhandclother.model.GarmentRequest;
 import com.davidarbana.secondhandclother.repository.GarmentRepository;
 import com.davidarbana.secondhandclother.service.GarmentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,7 +82,12 @@ public class GarmentController {
     }
 
     @PostMapping
-    public void createGarment(@RequestBody Garment garment) {
+    public void createGarment(@RequestBody GarmentRequest garment) {
         garmentService.publishGarment(garment);
+    }
+
+    @PatchMapping
+    public void patchGarment(@RequestBody GarmentRequest garmentRequest){
+        garmentService.updateGarment(garmentRequest);
     }
 }

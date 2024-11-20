@@ -1,6 +1,7 @@
 package com.davidarbana.secondhandclother.service;
 
 import com.davidarbana.secondhandclother.model.Garment;
+import com.davidarbana.secondhandclother.model.GarmentRequest;
 import com.davidarbana.secondhandclother.model.User;
 import com.davidarbana.secondhandclother.repository.GarmentRepository;
 import com.davidarbana.secondhandclother.repository.UserRepository;
@@ -34,7 +35,18 @@ public class GarmentService {
     }
 
     // Publish a new garment
-    public void publishGarment(Garment garment) {
+    public void publishGarment(GarmentRequest garmentRequest) {
+        Optional<User> user = userRepository.findById(garmentRequest.publisherId());
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("Invalid publisher id");
+        }
+        Garment garment = Garment.builder()
+                .type(garmentRequest.type())
+                .description(garmentRequest.description())
+                .size(garmentRequest.size())
+                .price(garmentRequest.price())
+                .user(user.get())
+                .build();
 
 //        Optional<User> user = userRepository.findById(152L);
 //        if (user.isEmpty()) {
@@ -45,23 +57,23 @@ public class GarmentService {
     }
 
     // Update a garment
-    public boolean updateGarment(Long id, String userId, Garment garment) {
-        Optional<Garment> existingGarment = garmentRepository.findById(id);
-        if (existingGarment.isPresent() && existingGarment.get().getPublisherId().equals(userId)) {
-            garment.setId(id);
-            garmentRepository.save(garment);
-            return true;
-        }
+    public boolean updateGarment(GarmentRequest garmentRequest) {
+//        Optional<Garment> existingGarment = garmentRepository.findById(id);
+//        if (existingGarment.isPresent() && existingGarment.get().getPublisherId().equals(userId)) {
+//            garment.setId(id);
+//            garmentRepository.save(garment);
+//            return true;
+//        }
         return false;
     }
 
     // Delete a garment
     public boolean deleteGarment(Long id, String userId) {
-        Optional<Garment> existingGarment = garmentRepository.findById(id);
+/*        Optional<Garment> existingGarment = garmentRepository.findById(id);
         if (existingGarment.isPresent() && existingGarment.get().getPublisherId().equals(userId)) {
             garmentRepository.deleteById(id);
             return true;
-        }
+        }*/
         return false;
     }
 }

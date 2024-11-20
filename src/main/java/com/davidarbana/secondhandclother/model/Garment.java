@@ -20,7 +20,6 @@ public class Garment {
     //Can be an ENUM
     private String type;
     private String description;
-    private String publisherId;
     private String size;
     private double price;
     @ManyToOne
