@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface GarmentRepository extends JpaRepository<Garment, String> {
+public interface GarmentRepository extends JpaRepository<Garment, Long> {
     // Find garments by type (case-insensitive search)
     List<Garment> findByTypeContainingIgnoreCase(String type);
 
@@ -22,6 +22,6 @@ public interface GarmentRepository extends JpaRepository<Garment, String> {
 
     List<Garment> findAll();
 
-    Optional<Garment> findById(String id);
+    Optional<Garment> findById(Long id);
 
 }

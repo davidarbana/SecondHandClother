@@ -27,6 +27,7 @@ public class User implements UserDetails {
     private String address;
     private String username;
     private String password;
+//    private String publisher;
 
     public <E> User(String username, String s, ArrayList<E> es) {
     }

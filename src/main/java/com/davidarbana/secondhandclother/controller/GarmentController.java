@@ -2,26 +2,28 @@ package com.davidarbana.secondhandclother.controller;
 
 import com.davidarbana.secondhandclother.model.Garment;
 import com.davidarbana.secondhandclother.repository.GarmentRepository;
+import com.davidarbana.secondhandclother.service.GarmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/clothes")
 public class GarmentController {
 
     private final GarmentRepository garmentRepository;
+    private final GarmentService garmentService;
 
-    public GarmentController (GarmentRepository garmentRepository) {
-        this.garmentRepository = garmentRepository;
-    }
 
     /**
      * List garments with optional filters.
@@ -73,8 +75,13 @@ public class GarmentController {
     @GetMapping("/{id}")
     public Garment getGarment(
             @Parameter(description = "ID of the garment to retrieve", required = true)
-            @PathVariable String id) {
+            @PathVariable Long id) {
         return garmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Garment not found"));
+    }
+
+    @PostMapping
+    public void createGarment(@RequestBody Garment garment) {
+        garmentService.publishGarment(garment);
     }
 }
