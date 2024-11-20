@@ -1,8 +1,8 @@
 package com.davidarbana.secondhandclother.controller;
 
+import com.davidarbana.secondhandclother.exception.CustomException;
 import com.davidarbana.secondhandclother.model.Garment;
 import com.davidarbana.secondhandclother.model.GarmentRequest;
-import com.davidarbana.secondhandclother.repository.GarmentRepository;
 import com.davidarbana.secondhandclother.service.GarmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,23 +10,20 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/clothes")
 public class GarmentController {
 
-    private final GarmentRepository garmentRepository;
     private final GarmentService garmentService;
-
 
     /**
      * List garments with optional filters.
@@ -44,21 +41,27 @@ public class GarmentController {
                             schema = @Schema(implementation = Garment.class)))
     })
     @GetMapping
-    public List<Garment> listGarments(
+    public ResponseEntity<List<Garment>> listGarments(
             @Parameter(description = "Filter garments by type") @RequestParam(required = false) String type,
             @Parameter(description = "Filter garments by size") @RequestParam(required = false) String size,
             @Parameter(description = "Filter garments by minimum price") @RequestParam(required = false) Double minPrice,
             @Parameter(description = "Filter garments by maximum price") @RequestParam(required = false) Double maxPrice) {
-        if (type != null) {
-            return garmentRepository.findByTypeContainingIgnoreCase(type);
-        }
-        if (size != null) {
-            return garmentRepository.findBySizeContainingIgnoreCase(size);
-        }
-        if (minPrice != null && maxPrice != null) {
-            return garmentRepository.findByPriceBetween(minPrice, maxPrice);
-        }
-        return garmentRepository.findAll();
+
+
+//        if (type != null) {
+//            response = garmentRepository.findByTypeContainingIgnoreCase(type);
+//        }
+//        if (size != null) {
+//            response = garmentRepository.findBySizeContainingIgnoreCase(size);
+//        }
+//        if (minPrice != null && maxPrice != null) {
+//            response = garmentRepository.findByPriceBetween(minPrice, maxPrice);
+//        } else if(type==null && size==null && minPrice==null && maxPrice==null){
+//            response = garmentRepository.findAll();
+//        }
+        List<Garment> response = garmentService.listGarments(type, size, minPrice, maxPrice);
+
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -76,25 +79,64 @@ public class GarmentController {
                     content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public Garment getGarment(
+    public ResponseEntity<Garment> getGarment(
             @Parameter(description = "ID of the garment to retrieve", required = true)
-            @PathVariable Long id) {
-        return garmentService.getGarmentById(id);
+            @PathVariable Long id) throws CustomException {
+        return ResponseEntity.ok(garmentService.getGarmentById(id));
     }
 
+    /**
+     * Create a new garment.
+     *
+     * @param garment    the garment data to create
+     * @param principal  the authenticated user performing the operation
+     */
+    @Operation(summary = "Create a new garment", description = "Create a new garment and add it to the collection.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully created a new garment")
+    })
     @PostMapping
-    public void createGarment(@RequestBody GarmentRequest garment, Principal principal) {
-        garmentService.publishGarment(garment, principal);
+    public ResponseEntity<Garment> createGarment(@RequestBody GarmentRequest garment, Principal principal) {
+
+        return ResponseEntity.ok(garmentService.publishGarment(garment, principal));
     }
 
+    /**
+     * Update an existing garment.
+     *
+     * @param id             the ID of the garment to update
+     * @param garmentRequest the new garment data
+     * @param principal      the authenticated user performing the operation
+     * @return
+     */
+    @Operation(summary = "Update a garment", description = "Update the details of an existing garment.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated the garment"),
+            @ApiResponse(responseCode = "404", description = "Garment not found",
+                    content = @Content(mediaType = "application/json"))
+    })
     @PutMapping("/{id}")
-    public void patchGarment(@PathVariable("id") Long id, @RequestBody GarmentRequest garmentRequest, Principal principal){
+    public ResponseEntity<String> patchGarment(@PathVariable("id") Long id, @RequestBody GarmentRequest garmentRequest, Principal principal) throws CustomException {
         garmentService.updateGarment(id, garmentRequest, principal);
+        return ResponseEntity.ok("Garment Updated");
     }
 
+    /**
+     * Delete an existing garment.
+     *
+     * @param id        the ID of the garment to delete
+     * @param principal the authenticated user performing the operation
+     */
+    @Operation(summary = "Delete a garment", description = "Delete an existing garment from the collection.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Successfully deleted the garment"),
+            @ApiResponse(responseCode = "404", description = "Garment not found",
+                    content = @Content(mediaType = "application/json"))
+    })
     @DeleteMapping("/{id}")
-    public void deleteGarment(@PathVariable("id") Long id, Principal principal){
+    public ResponseEntity<String> deleteGarment(@PathVariable("id") Long id, Principal principal) {
         garmentService.deleteGarment(id, principal);
-    }
 
+        return ResponseEntity.ok("Garment Deleted");
+    }
 }

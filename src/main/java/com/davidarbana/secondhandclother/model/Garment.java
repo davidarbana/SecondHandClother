@@ -18,7 +18,6 @@ public class Garment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    //Can be an ENUM
     @Nullable private String type;
     @Nullable private String description;
     @Nullable private String size;

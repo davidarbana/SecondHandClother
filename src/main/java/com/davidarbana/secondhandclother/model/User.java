@@ -29,9 +29,6 @@ public class User implements UserDetails {
     private String password;
 //    private String publisher;
 
-    public <E> User(String username, String s, ArrayList<E> es) {
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

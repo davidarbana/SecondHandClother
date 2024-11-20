@@ -1,11 +1,13 @@
 package com.davidarbana.secondhandclother.controller;
 
+import com.davidarbana.secondhandclother.exception.CustomException;
 import com.davidarbana.secondhandclother.model.User;
 import com.davidarbana.secondhandclother.repository.UserRepository;
 import com.davidarbana.secondhandclother.security.JwtService;
 import com.davidarbana.secondhandclother.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,27 +25,24 @@ public class AuthenticationController {
 
     private final UserService userService;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
     // Register a new user
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
+    public ResponseEntity<String> register(@RequestBody User user) throws CustomException {
         // Simple check: If the user already exists, throw an exception
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new CustomException("User already exists");
         }
-
         // Save the user to the database
         userService.register(user);
-        return jwtService.generateToken(user.getUsername());
+        return ResponseEntity.ok(jwtService.generateToken(user.getUsername()));
     }
 
     // Login and get JWT token
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
+    public ResponseEntity<String> login(@RequestBody User user) {
         // Authenticate the user based on username and password
-        return userService.login(user);
+        return ResponseEntity.ok(userService.login(user));
     }
 }
