@@ -1,6 +1,7 @@
 
 package com.davidarbana.secondhandclother.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +19,10 @@ public class Garment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     //Can be an ENUM
-    private String type;
-    private String description;
-    private String size;
-    private double price;
+    @Nullable private String type;
+    @Nullable private String description;
+    @Nullable private String size;
+    @Nullable private double price;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

@@ -10,10 +10,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -82,12 +84,12 @@ public class GarmentController {
     }
 
     @PostMapping
-    public void createGarment(@RequestBody GarmentRequest garment) {
-        garmentService.publishGarment(garment);
+    public void createGarment(@RequestBody GarmentRequest garment, Principal principal) {
+        garmentService.publishGarment(garment, principal);
     }
 
-    @PatchMapping
-    public void patchGarment(@RequestBody GarmentRequest garmentRequest){
-        garmentService.updateGarment(garmentRequest);
+    @PutMapping("/{id}")
+    public void patchGarment(@PathVariable("id") Long id, @RequestBody GarmentRequest garmentRequest, Principal principal){
+        garmentService.updateGarment(id, garmentRequest, principal);
     }
 }
