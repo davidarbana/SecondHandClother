@@ -1,6 +1,5 @@
 package com.davidarbana.secondhandclother.controller;
 
-import com.davidarbana.secondhandclother.exception.CustomException;
 import com.davidarbana.secondhandclother.model.User;
 import com.davidarbana.secondhandclother.repository.UserRepository;
 import com.davidarbana.secondhandclother.security.JwtService;
@@ -10,9 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -96,5 +92,4 @@ public class AuthenticationControllerTest {
                 .andExpect(jsonPath("$", is("mock-jwt-token")));  // Check if JWT token is returned
     }
 
-    // You can add more tests for various edge cases, such as invalid credentials for login
 }
